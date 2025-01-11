@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Software Engineer Hiring Assignment
 
-## Getting Started
+It's intended to mimic work you might do here, while giving us an understanding of your skills in:
 
-First, run the development server:
+- Coding
+- User Experience
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tech and UX Project Instructions
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+As a front-end software engineer, you're asked to build a small prototype that &mdash; using the provided dataset &mdash; highlights the benefits of a great search experience and basic edition capabilities.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Push the provided dataset to an Algolia index
+- Using [React InstantSearch](https://www.algolia.com/doc/guides/building-search-ui/what-is-instantsearch/react/) (or another flavor of the InstantSearch library), implement an as-you-type search experience that enables users to easily find restaurants: both by passing a search query and/or filtering on the &ldquo;type of cuisine&rdquo;
+- Allow users to delete restaurants from the Algolia index directly from the frontend application
+- [bonus] Allow users to add restaurants into the Algolia index directly from the frontend application
+- [bonus] Add the search state to the URL
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Important Notes
 
-## Learn More
+- The dataset is available [here](https://raw.githubusercontent.com/Jerska/front-end-test/master/dataset/restaurants.json).
+- Feel free to use any tooling with which you&rsquo;re most comfortable with, for example: create-react-app, https://codesandbox.io/ or https://glitch.com/ are definitely ok!
 
-To learn more about Next.js, take a look at the following resources:
+## Deliverable
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Once you're happy with what you've done
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Publish it using vercel, netlify, or any other service of your choice so we can interact with it
+- Send us a link to your finished project's repo via email
+- Follow at least the instructions above, but feel free to go beyond if you have ideas &mdash; wow us!
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Happy coding!
