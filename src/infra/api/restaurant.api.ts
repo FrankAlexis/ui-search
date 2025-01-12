@@ -1,17 +1,24 @@
 import { Restaurant } from '@/domain/restaurant';
-import axios from 'axios';
-
-const MOCK_DATA_URL =
-  'https://raw.githubusercontent.com/Jerska/front-end-test/master/dataset/restaurants.json';
+import searchClient from '../instances/algolia-search.client';
 
 export class RestaurantApi {
-  static async fetchRestaurants(): Promise<Restaurant[]> {
+  static async fetchRestaurants(query: string): Promise<Restaurant[]> {
     try {
-      const response = await axios.get<Restaurant[]>(MOCK_DATA_URL);
-      return response.data.slice(0, 10);
+
+      const response = await searchClient.search<Restaurant[]>({
+        requests: [
+          {
+            indexName: 'data',
+            query
+          }
+        ]
+      })
+      // @ts-expect-error: Algolia search response type mismatch
+      return response.results[0].hits;
     } catch (error) {
       console.error('Error fetching restaurants:', error);
       throw new Error('Failed to fetch restaurants');
     }
   }
 }
+

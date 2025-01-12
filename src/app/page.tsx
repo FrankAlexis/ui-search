@@ -1,36 +1,29 @@
-import { use } from 'react';
-import { FetchRestaurantsUseCase } from '@/use-cases/fetch-restaurants.use-case';
-import { Restaurant } from '@/domain/restaurant';
-import RestaurantHit from '@/interface/components/restaurant-hit';
+'use client';
+import { StateProvider } from '@/infra/hooks/state-context';
+import BackToTopButton from '@/interface/components/back-to-top';
+import SearchInput from '@/interface/components/search-input';
+import SearchWrapper from '@/interface/components/search-results';
 import Image from 'next/image';
 
 export default function Home() {
-  const restaurants = use<Restaurant[]>(FetchRestaurantsUseCase.execute());
-
   return (
-    <div className='grid min-h-screen items-center justify-items-center gap-16'>
-      <main className='row-start-2 flex flex-col items-center gap-8 sm:items-start'>
-        <div className='min-h-screen p-4'>
-          <h1 className='mb-6 text-center text-3xl font-bold'>
-            Restaurant Search
-          </h1>
-
-          <div className='mt-8'>
-            <h2 className='text-2xl font-semibold'>Results</h2>
-            <ul className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3'>
-              {restaurants.map((restaurant) => (
-                <li key={restaurant.objectID} className='max-w-md'>
-                  <RestaurantHit hit={restaurant} />
-                </li>
-              ))}
-            </ul>
+    <div className='grid min-h-screen items-center justify-items-center gap-2'>
+      <StateProvider>
+        <header className='sticky top-0 z-10 row-start-1 flex w-full flex-wrap items-center justify-center gap-6 border-b-2 bg-slate-50 p-4 text-black'>
+          <Image src='/icon.svg' alt='Search icon' width={50} height={50} />
+          <SearchInput />
+        </header>
+        <main className='row-start-2 flex flex-col items-center gap-8 sm:items-start'>
+          <div className='min-h-screen p-4'>
+            <SearchWrapper />
           </div>
-        </div>
-      </main>
+          <BackToTopButton />
+        </main>
+      </StateProvider>
       <footer className='row-start-3 flex w-full flex-wrap items-center justify-center gap-6 bg-black p-4 text-white'>
         <a
           className='flex items-center gap-2 hover:underline hover:underline-offset-4'
-          href='https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app'
+          href='https://github.com/FrankAlexis/ui-search'
           target='_blank'
           rel='noopener noreferrer'
         >
@@ -41,7 +34,7 @@ export default function Home() {
             width={16}
             height={16}
           />
-          Learn
+          GitHub Source code
         </a>
       </footer>
     </div>
