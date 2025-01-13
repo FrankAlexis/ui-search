@@ -22,9 +22,15 @@ export interface Restaurant {
   price_range: string;
   dining_style: string;
   rounded_stars_count: number;
+  [key: string]: unknown;
 }
 
 export interface Geoloc {
   lat: number;
   lng: number;
 }
+
+export type RestaurantFormValues = Omit<
+  Restaurant,
+  'objectID' | 'mobile_reserve_url' | '_geoloc' | 'postal_code' | 'state' | 'country'
+>;

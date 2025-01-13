@@ -5,10 +5,11 @@ import { Restaurant } from '@/domain/restaurant';
 import { FetchRestaurantsUseCase } from '@/use-cases/fetch-restaurants.use-case';
 import Image from 'next/image';
 import { useStateContext } from '@/infra/hooks/state-context';
+import { DeleteRestaurantsUseCase } from '@/use-cases/delete-restaurant.use-case';
 
 const SearchWrapper = () => {
   const [results, setResults] = useState<Restaurant[]>([]);
-  const { inputValue, setLoading } = useStateContext();
+  const { inputValue, setLoading, setMessage } = useStateContext();
 
   useEffect(() => {
     FetchRestaurantsUseCase.execute('seafood')
@@ -32,13 +33,31 @@ const SearchWrapper = () => {
     }
   }, [inputValue, setLoading]);
 
+  const deleteObject = (objectID: string) => {
+    DeleteRestaurantsUseCase.execute(objectID)
+      .then((id) => {
+        setResults(
+          results.filter((restaurant) => restaurant.objectID !== objectID)
+        );
+        setMessage({
+          type: 'success',
+          text: `Restaurant deleted successfully with ID: ${id}`,
+        });
+      })
+      .catch((error) => {
+        console.error('Error deleting restaurant:', error);
+        setMessage({ type: 'error', text: error.message });
+      })
+      .finally(() => setTimeout(() => setMessage(undefined), 5000));
+  };
+
   return (
-    <>
+    <div>
       {results.length > 0 ? (
         <ul className='grid-cols mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
           {results.map((restaurant) => (
             <li key={restaurant.objectID} className='max-w-xs'>
-              <RestaurantHit hit={restaurant} />
+              <RestaurantHit hit={restaurant} deleteObject={deleteObject} />
             </li>
           ))}
         </ul>
@@ -55,7 +74,7 @@ const SearchWrapper = () => {
           No results found. Try searching for something else!
         </div>
       )}
-    </>
+    </div>
   );
 };
 

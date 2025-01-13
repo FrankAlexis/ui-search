@@ -9,6 +9,14 @@ const SearchInput = () => {
   const [debouncedQuery, setDebouncedQuery] = useState(query);
   const { loading, setInputValue } = useStateContext();
 
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const searchQuery = url.searchParams.get('query');
+    if (searchQuery) {
+      setQuery(searchQuery);
+    }
+  }, []);
+
   const validateInput = useCallback((value: string) => {
     if (!value.trim()) {
       setError('Search query cannot be empty.');
@@ -21,6 +29,13 @@ const SearchInput = () => {
     setError('');
     return true;
   }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setQuery(e.target.value);
+    const url = new URL(window.location.href);
+    url.searchParams.set('query', e.target.value);
+    window.history.pushState({}, '', url.toString());
+  };
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -40,11 +55,19 @@ const SearchInput = () => {
 
   return (
     <div className='mx-auto w-[50rem] max-w-lg'>
-      <form onSubmit={(e) => e.preventDefault()} className='relative'>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          const url = new URL(window.location.origin);
+          url.searchParams.set('query', query);
+          window.location.href = url.toString();
+        }}
+        className='relative'
+      >
         <input
           type='text'
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={handleChange}
           placeholder='Search for restaurants...'
           className={`w-full rounded-lg border px-4 py-3 text-sm shadow focus:outline-none focus:ring-2 ${
             error
@@ -53,8 +76,8 @@ const SearchInput = () => {
           }`}
         />
         <button
-          type='button'
-          className='absolute right-2 top-1/2 -translate-y-1/2 transform rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'
+          type='submit'
+          className='absolute right-2 top-1/2 -translate-y-1/2 transform cursor-pointer rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'
           disabled={!query.trim() || loading}
         >
           {loading ? (
