@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useStateContext } from '@/infra/hooks/state-context';
+import Link from 'next/link';
 
 const SearchInput = () => {
   const [query, setQuery] = useState('');
@@ -75,17 +76,16 @@ const SearchInput = () => {
               : 'border-gray-300 focus:ring-blue-500'
           }`}
         />
-        <button
-          type='submit'
+        <Link
           className='absolute right-2 top-1/2 -translate-y-1/2 transform cursor-pointer rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'
-          disabled={!query.trim() || loading}
+          href={`/?query=${query}`}
         >
           {loading ? (
             <div className='h-5 w-5 animate-spin rounded-full border-b-2 border-t-2 border-blue-100' />
           ) : (
             <Image src='/search.svg' width={20} height={20} alt='search icon' />
           )}
-        </button>
+        </Link>
       </form>
       {error && <p className='mt-2 text-sm text-red-500'>{error}</p>}
     </div>

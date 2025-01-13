@@ -2,17 +2,16 @@ import { Restaurant, RestaurantFormValues } from '@/domain/restaurant';
 import searchClient from '../instances/algolia-search.client';
 
 export class RestaurantApi {
-  static async fetchRestaurants(query: string): Promise<Restaurant[]> {
+  static async fetchRestaurants(query: string, indexName = 'data'): Promise<Restaurant[]> {
     try {
       const response = await searchClient.search<Restaurant[]>({
         requests: [
           {
-            indexName: 'data',
+            indexName,
             query
           }
         ]
       })
-      console.log(response.results);
       // @ts-expect-error: Algolia search response type mismatch
       return response.results[0].hits;
     } catch (error) {
@@ -21,10 +20,10 @@ export class RestaurantApi {
     }
   }
 
-  static async deleteRestaurant(objectID: string): Promise<number> {
+  static async deleteRestaurant(objectID: string, indexName = 'data'): Promise<number> {
     try {
       const response = await searchClient.deleteObject({
-        indexName: 'data',
+        indexName,
         objectID
       });
       return response.taskID
@@ -34,10 +33,10 @@ export class RestaurantApi {
     }
   }
 
-  static async addRestaurant(restaurant: RestaurantFormValues): Promise<string> {
+  static async addRestaurant(restaurant: RestaurantFormValues, indexName = 'data'): Promise<string> {
     try {
       const response = await searchClient.saveObjects({
-        indexName: 'data',
+        indexName,
         objects: [restaurant],
         waitForTasks: true,
         batchSize: 1

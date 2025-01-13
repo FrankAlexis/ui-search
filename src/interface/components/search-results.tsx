@@ -6,10 +6,15 @@ import { FetchRestaurantsUseCase } from '@/use-cases/fetch-restaurants.use-case'
 import Image from 'next/image';
 import { useStateContext } from '@/infra/hooks/state-context';
 import { DeleteRestaurantsUseCase } from '@/use-cases/delete-restaurant.use-case';
+import ConfirmModal from './confirm-modal';
 
 const SearchWrapper = () => {
   const [results, setResults] = useState<Restaurant[]>([]);
   const { inputValue, setLoading, setMessage } = useStateContext();
+  const [isOpen, setIsOpen] = useState(false);
+  const [restaurantToDelete, setRestaurantToDelete] = useState<
+    Restaurant | undefined
+  >(undefined);
 
   useEffect(() => {
     FetchRestaurantsUseCase.execute('seafood')
@@ -33,7 +38,11 @@ const SearchWrapper = () => {
     }
   }, [inputValue, setLoading]);
 
-  const deleteObject = (objectID: string) => {
+  const deleteObject = (objectID?: string) => {
+    setIsOpen(false);
+
+    if (!objectID) return;
+
     DeleteRestaurantsUseCase.execute(objectID)
       .then((id) => {
         setResults(
@@ -47,17 +56,22 @@ const SearchWrapper = () => {
       .catch((error) => {
         console.error('Error deleting restaurant:', error);
         setMessage({ type: 'error', text: error.message });
-      })
-      .finally(() => setTimeout(() => setMessage(undefined), 5000));
+      });
   };
 
   return (
-    <div>
+    <section>
       {results.length > 0 ? (
         <ul className='grid-cols mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
           {results.map((restaurant) => (
             <li key={restaurant.objectID} className='max-w-xs'>
-              <RestaurantHit hit={restaurant} deleteObject={deleteObject} />
+              <RestaurantHit
+                hit={restaurant}
+                deleteObject={() => {
+                  setRestaurantToDelete(restaurant);
+                  setIsOpen(true);
+                }}
+              />
             </li>
           ))}
         </ul>
@@ -74,7 +88,18 @@ const SearchWrapper = () => {
           No results found. Try searching for something else!
         </div>
       )}
-    </div>
+      <ConfirmModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        message={
+          <>
+            Are you sure you want to delete the restaurant{' '}
+            <strong>{restaurantToDelete?.name}</strong>?
+          </>
+        }
+        onConfirm={() => deleteObject(restaurantToDelete?.objectID)}
+      />
+    </section>
   );
 };
 

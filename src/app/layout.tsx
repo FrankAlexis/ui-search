@@ -23,7 +23,7 @@ export default function RootLayout({
               <SnackBar />
             </main>
           </StateProvider>
-          <footer className='row-start-3 flex w-full flex-wrap items-center justify-center gap-6 bg-black p-4 text-white'>
+          <footer className='text-gray row-start-3 flex w-full flex-wrap items-center justify-center gap-6 border-cyan-100 bg-black p-4 text-white'>
             <a
               className='flex items-center gap-2 hover:underline hover:underline-offset-4'
               href='https://github.com/FrankAlexis/ui-search'

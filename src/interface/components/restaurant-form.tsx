@@ -2,34 +2,40 @@
 import { RestaurantFormValues } from '@/domain/restaurant';
 import { useStateContext } from '@/infra/hooks/state-context';
 import { CreateRestaurantsUseCase } from '@/use-cases/create-restaurant.use-case';
+import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 const RestaurantForm: React.FC = () => {
+  const [isLoading, setIsLoading] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<RestaurantFormValues>({
+    mode: 'onChange',
     defaultValues: {
       reviews_count: 0,
       price: 0,
+      stars_count: 0,
     },
   });
 
-  const { setMessage, loading } = useStateContext();
+  const { setMessage } = useStateContext();
 
   const onSubmit: SubmitHandler<RestaurantFormValues> = (data) => {
-    console.log(data);
-    const transformData = {
+    setIsLoading(true);
+    const cleanData = {
       ...data,
-      price_range: `${data.price_range_min} to ${data.price_range_max}`,
+      payment_options: [data.payment_options],
     };
-    CreateRestaurantsUseCase.execute(transformData)
+    CreateRestaurantsUseCase.execute(cleanData)
       .then((id) => {
         setMessage({
           type: 'success',
           text: `Restaurant added successfully with ID: ${id}`,
         });
+        reset();
       })
       .catch((error) => {
         setMessage({
@@ -37,19 +43,23 @@ const RestaurantForm: React.FC = () => {
           text: error.message,
         });
       })
-      .finally(() => setTimeout(() => setMessage(undefined), 5000));
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className='mx-auto rounded-lg border border-gray-200 bg-white p-6 shadow-md'
+      className='mx-auto min-w-fit rounded-lg border border-gray-200 bg-white p-6 shadow-md'
     >
       <h2 className='mb-6 text-2xl font-bold text-gray-800'>Restaurant Form</h2>
 
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
         <div className='mb-4'>
-          <label className='mb-2 block font-semibold text-gray-700'>Name</label>
+          <label className='mb-2 block font-semibold text-gray-700'>
+            Name *
+          </label>
           <input
             {...register('name', { required: 'Name is required' })}
             className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -61,7 +71,7 @@ const RestaurantForm: React.FC = () => {
 
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Address
+            Address *
           </label>
           <input
             {...register('address', { required: 'Address is required' })}
@@ -75,7 +85,9 @@ const RestaurantForm: React.FC = () => {
         </div>
 
         <div className='mb-4'>
-          <label className='mb-2 block font-semibold text-gray-700'>Area</label>
+          <label className='mb-2 block font-semibold text-gray-700'>
+            Area *
+          </label>
           <input
             {...register('area', { required: 'Area is required' })}
             className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -86,7 +98,9 @@ const RestaurantForm: React.FC = () => {
         </div>
 
         <div className='mb-4'>
-          <label className='mb-2 block font-semibold text-gray-700'>City</label>
+          <label className='mb-2 block font-semibold text-gray-700'>
+            City *
+          </label>
           <input
             {...register('city', { required: 'City is required' })}
             className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -98,13 +112,12 @@ const RestaurantForm: React.FC = () => {
 
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Payment Options
+            Payment Options *
           </label>
           <select
             {...register('payment_options', {
               required: 'At least one payment option is required',
             })}
-            multiple
             className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
           >
             <option value='AMEX'>AMEX</option>
@@ -123,15 +136,13 @@ const RestaurantForm: React.FC = () => {
 
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Reviews count
+            Reviews count *
           </label>
           <input
+            type='number'
             {...register('reviews_count', {
               required: 'Reviews count is required',
-              valueAsNumber: true,
             })}
-            placeholder='0'
-            type='number'
             className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
           />
           {errors.price && (
@@ -143,7 +154,30 @@ const RestaurantForm: React.FC = () => {
 
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Price
+            Stars count *
+          </label>
+          <input
+            {...register('stars_count', {
+              required: 'Stars count is required',
+              pattern: {
+                value: /^(?:[0-4](?:\.\d+)?|5(?:\.0+)?)$/, // Matches 0 to 5, including decimals
+                message: 'Enter a value between 0 and 5',
+              },
+            })}
+            placeholder='0.0'
+            type='text'
+            className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+          />
+          {errors.price && (
+            <p className='mt-1 text-sm text-red-500'>
+              {errors.stars_count?.message}
+            </p>
+          )}
+        </div>
+
+        <div className='mb-4'>
+          <label className='mb-2 block font-semibold text-gray-700'>
+            Price *
           </label>
           <input
             {...register('price', {
@@ -160,7 +194,7 @@ const RestaurantForm: React.FC = () => {
         </div>
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Phone Number
+            Phone Number *
           </label>
           <input
             {...register('phone_number', {
@@ -177,7 +211,7 @@ const RestaurantForm: React.FC = () => {
         </div>
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Neighborhood
+            Neighborhood *
           </label>
           <input
             {...register('neighborhood', {
@@ -208,7 +242,7 @@ const RestaurantForm: React.FC = () => {
         </div>
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Price Range
+            Price Range *
           </label>
           <div className='flex space-x-4'>
             <input
@@ -216,17 +250,7 @@ const RestaurantForm: React.FC = () => {
                 required: 'Minimum price is required',
                 valueAsNumber: true,
               })}
-              placeholder='Min'
-              type='number'
-              className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
-            <input
-              {...register('price_range_max', {
-                required: 'Maximum price is required',
-                valueAsNumber: true,
-              })}
-              placeholder='Max'
-              type='number'
+              placeholder=''
               className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
           </div>
@@ -235,15 +259,10 @@ const RestaurantForm: React.FC = () => {
               {errors.price_range_min.message}
             </p>
           )}
-          {errors.price_range_max && (
-            <p className='mt-1 text-sm text-red-500'>
-              {errors.price_range_max.message}
-            </p>
-          )}
         </div>
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Food Type
+            Food Type *
           </label>
           <select
             {...register('food_type', { required: 'Food type is required' })}
@@ -264,7 +283,7 @@ const RestaurantForm: React.FC = () => {
 
         <div className='mb-4'>
           <label className='mb-2 block font-semibold text-gray-700'>
-            Dining Style
+            Dining Style *
           </label>
           <select
             {...register('dining_style', {
@@ -284,13 +303,12 @@ const RestaurantForm: React.FC = () => {
           )}
         </div>
       </div>
-
       <button
         type='submit'
-        disabled={loading}
+        disabled={isLoading}
         className='mx-auto block rounded-lg bg-blue-500 px-6 py-2 text-white hover:bg-blue-600'
       >
-        {loading ? (
+        {isLoading ? (
           <div className='h-5 w-5 animate-spin rounded-full border-b-2 border-t-2 border-blue-100' />
         ) : (
           'Submit'

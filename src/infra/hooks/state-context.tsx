@@ -1,4 +1,10 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from 'react';
 
 interface Message {
   type: 'success' | 'error';
@@ -22,6 +28,15 @@ export const StateProvider: React.FC<{ children: ReactNode }> = ({
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<Message | undefined>(undefined);
   const [inputValue, setInputValue] = useState('');
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(undefined);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
 
   return (
     <StateContext.Provider

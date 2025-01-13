@@ -7,13 +7,13 @@ export default function RestaurantHit({
   deleteObject,
 }: {
   hit: Restaurant;
-  deleteObject: (objectID: string) => void;
+  deleteObject: () => void;
 }) {
   return (
     <article className='mx-auto h-full max-w-sm overflow-hidden rounded-lg border border-gray-200 bg-white p-4 shadow-md'>
       <figure className='relative mb-4 flex justify-center'>
         <button
-          onClick={() => deleteObject(hit.objectID)}
+          onClick={deleteObject}
           className='hove:bg-red-200 absolute left-[-5px] top-0 rounded-full bg-red-100 px-3 py-1 text-sm font-semibold text-red-700 focus:outline-none focus:ring focus:ring-red-300'
         >
           <Image
