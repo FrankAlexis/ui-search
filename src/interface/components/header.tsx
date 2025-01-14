@@ -1,6 +1,7 @@
 import SearchInput from '@/interface/components/search-input';
 import Image from 'next/image';
 import Link from 'next/link';
+import FilterOfCuisine from './filter-of-cuisine';
 
 const Header = () => {
   return (
@@ -9,6 +10,7 @@ const Header = () => {
         <Image src='/icon.svg' alt='Search icon' width={50} height={50} />
       </Link>
       <SearchInput />
+      <FilterOfCuisine />
       <Link href='/restaurant' className='rounded-full p-2 hover:bg-blue-50'>
         <Image
           src='/add.svg'

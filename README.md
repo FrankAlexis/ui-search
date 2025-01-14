@@ -18,7 +18,7 @@ As a front-end software engineer, you're asked to build a small prototype that &
 ### Important Notes
 
 - The dataset is available [here](https://raw.githubusercontent.com/Jerska/front-end-test/master/dataset/restaurants.json).
-- Feel free to use any tooling with which you&rsquo;re most comfortable with, for example: create-react-app, https://codesandbox.io/ or https://glitch.com/ are definitely ok!
+- Feel free to use any tooling with which you&rsquo;re most comfortable with, for example: create-react-app, <https://codesandbox.io/> or <https://glitch.com/> are definitely ok!
 
 ## Deliverable
 
@@ -29,3 +29,26 @@ Once you're happy with what you've done
 - Follow at least the instructions above, but feel free to go beyond if you have ideas &mdash; wow us!
 
 Happy coding!
+
+## How to run the code locally
+
+- Clone the repository
+
+- Add your Algolia credentials to the `.env.local` file
+
+```bash
+NEXT_PUBLIC_ALGOLIA_SEARCH_APP_ID=""
+NEXT_PUBLIC_ALGOLIA_SEARCH_API_KEY=""
+```
+
+- Install the dependencies
+
+```bash
+npm install
+```
+
+- Run the development server
+
+```bash
+npm run dev
+```

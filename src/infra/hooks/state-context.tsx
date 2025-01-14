@@ -14,6 +14,8 @@ interface Message {
 interface StateContextProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
+  listOfCuisine: string[];
+  setListOfCuisine: (listOfCuisine: string[]) => void;
   inputValue: string;
   setInputValue: (value: string) => void;
   message?: Message;
@@ -25,9 +27,10 @@ const StateContext = createContext<StateContextProps | undefined>(undefined);
 export const StateProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<Message | undefined>(undefined);
-  const [inputValue, setInputValue] = useState('');
+  const [listOfCuisine, setListOfCuisine] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState('Italian');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (message) {
@@ -47,6 +50,8 @@ export const StateProvider: React.FC<{ children: ReactNode }> = ({
         setInputValue,
         message,
         setMessage,
+        listOfCuisine,
+        setListOfCuisine,
       }}
     >
       {children}

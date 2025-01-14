@@ -2,21 +2,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { useStateContext } from '@/infra/hooks/state-context';
-import Link from 'next/link';
+import { setQueryParam } from '@/infra/utils/set-query-param';
+import ErrorMessage from './form/error-message';
 
 const SearchInput = () => {
-  const [query, setQuery] = useState('');
-  const [error, setError] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState(query);
   const { loading, setInputValue } = useStateContext();
-
-  useEffect(() => {
-    const url = new URL(window.location.href);
-    const searchQuery = url.searchParams.get('query');
-    if (searchQuery) {
-      setQuery(searchQuery);
-    }
-  }, []);
+  const [error, setError] = useState('');
+  const [query, setQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState(query);
 
   const validateInput = useCallback((value: string) => {
     if (!value.trim()) {
@@ -33,9 +26,7 @@ const SearchInput = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
-    const url = new URL(window.location.href);
-    url.searchParams.set('query', e.target.value);
-    window.history.pushState({}, '', url.toString());
+    setQueryParam(e.target.value);
   };
 
   useEffect(() => {
@@ -57,13 +48,13 @@ const SearchInput = () => {
   return (
     <div className='mx-auto w-[50rem] max-w-lg'>
       <form
+        className='relative'
         onSubmit={(e) => {
           e.preventDefault();
-          const url = new URL(window.location.origin);
-          url.searchParams.set('query', query);
-          window.location.href = url.toString();
+          if (window.location.pathname !== '/') {
+            window.location.href = `${window.location.origin}?query=${query}`;
+          }
         }}
-        className='relative'
       >
         <input
           type='text'
@@ -76,18 +67,18 @@ const SearchInput = () => {
               : 'border-gray-300 focus:ring-blue-500'
           }`}
         />
-        <Link
+        <button
           className='absolute right-2 top-1/2 -translate-y-1/2 transform cursor-pointer rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600'
-          href={`/?query=${query}`}
+          type='submit'
         >
           {loading ? (
             <div className='h-5 w-5 animate-spin rounded-full border-b-2 border-t-2 border-blue-100' />
           ) : (
             <Image src='/search.svg' width={20} height={20} alt='search icon' />
           )}
-        </Link>
+        </button>
       </form>
-      {error && <p className='mt-2 text-sm text-red-500'>{error}</p>}
+      <ErrorMessage error={error} />
     </div>
   );
 };

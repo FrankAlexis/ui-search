@@ -33,6 +33,8 @@ const BackToTopButton = () => {
           onClick={scrollToTop}
           className='fixed bottom-5 right-5 rounded-full bg-blue-600 p-3 text-white shadow-lg hover:bg-blue-700 focus:outline-none focus:ring focus:ring-blue-300'
           aria-label='Scroll to top'
+          aria-live='polite'
+          aria-pressed='false'
         >
           ↑
         </button>

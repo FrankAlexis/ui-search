@@ -33,15 +33,14 @@ export class RestaurantApi {
     }
   }
 
-  static async addRestaurant(restaurant: RestaurantFormValues, indexName = 'data'): Promise<string> {
+  static async addRestaurant(restaurant: RestaurantFormValues, indexName = 'data'): Promise<string | undefined> {
     try {
-      const response = await searchClient.saveObjects({
+      const response = await searchClient.saveObject({
         indexName,
-        objects: [restaurant],
-        waitForTasks: true,
-        batchSize: 1
+        body: restaurant
       })
-      return response[0].objectIDs[0];
+      await searchClient.clearCache();
+      return response.objectID;
     } catch (error) {
       console.error('Error adding restaurant:', error);
       throw new Error('Failed to add the restaurant');

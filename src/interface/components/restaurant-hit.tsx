@@ -128,7 +128,7 @@ export default function RestaurantHit({
           </a>
         )}
         {hit.reserve_url && (
-          <div className='mt-4 flex items-center justify-center'>
+          <div className='mt-4 flex h-auto items-center justify-center'>
             <a
               href={hit.reserve_url}
               target='_blank'
