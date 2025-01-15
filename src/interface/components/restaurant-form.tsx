@@ -1,54 +1,23 @@
 'use client';
-import { RestaurantFormValues } from '@/domain/restaurant';
-import { useStateContext } from '@/infra/hooks/state-context';
 import { validateStringField } from '@/infra/utils/validate-field';
-import { CreateRestaurantsUseCase } from '@/use-cases/create-restaurant.use-case';
-import { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import ErrorMessage from './form/error-message';
 import Input from './form/input/input';
+import Select from './form/select/select';
+import useHandleForm from '@/infra/hooks/use-handle-form';
 
 const RestaurantForm: React.FC = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const { setMessage } = useStateContext();
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<RestaurantFormValues>({
-    mode: 'all',
-    defaultValues: {
-      reviews_count: 0,
-      price: 0,
-      stars_count: 0,
-    },
+    errors,
+    isLoading,
+    onSubmit,
+    listOfCuisine,
+    diningStyleOptions,
+  } = useHandleForm({
+    reviews_count: 0,
+    price: 0,
+    stars_count: 0,
   });
-
-  const onSubmit: SubmitHandler<RestaurantFormValues> = (data) => {
-    setIsLoading(true);
-    const cleanData = {
-      ...data,
-      payment_options: [data.payment_options],
-    };
-    CreateRestaurantsUseCase.execute(cleanData)
-      .then((id) => {
-        setMessage({
-          type: 'success',
-          text: `Restaurant added successfully ${id ? `with ID: ${id}` : ''}`,
-        });
-        reset();
-      })
-      .catch((error) => {
-        setMessage({
-          type: 'error',
-          text: (error as Error).message,
-        });
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  };
 
   return (
     <form
@@ -77,7 +46,7 @@ const RestaurantForm: React.FC = () => {
         />
 
         <Input
-          label='Area *'
+          label='Area'
           error={errors?.area?.message}
           {...register('area')}
         />
@@ -91,25 +60,14 @@ const RestaurantForm: React.FC = () => {
           })}
         />
 
-        <div className='mb-4'>
-          <label className='mb-2 block font-semibold text-gray-700'>
-            Payment Options *
-          </label>
-          <select
-            {...register('payment_options', {
-              required: 'At least one payment option is required',
-            })}
-            className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-          >
-            <option value='AMEX'>AMEX</option>
-            <option value='Carte Blanche'>Carte Blanche</option>
-            <option value='Diners Club'>Diners Club</option>
-            <option value='Discover'>Discover</option>
-            <option value='MasterCard'>MasterCard</option>
-            <option value='Visa'>Visa</option>
-          </select>
-          <ErrorMessage error={errors?.payment_options?.message} />
-        </div>
+        <Select
+          label='Payment Options *'
+          error={errors?.payment_options?.message}
+          {...register('payment_options', {
+            required: 'At least one payment option is required',
+          })}
+          options={['Cash', 'Visa', 'MasterCard', 'American Express']}
+        />
 
         <Input
           label='Reviews count *'
@@ -207,41 +165,23 @@ const RestaurantForm: React.FC = () => {
           placeholder='$0 to $100'
         />
 
-        <div className='mb-4'>
-          <label className='mb-2 block font-semibold text-gray-700'>
-            Food Type *
-          </label>
-          <select
-            {...register('food_type', { required: 'Food type is required' })}
-            className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-          >
-            <option value=''>Select Food Type</option>
-            <option value='Italian'>Italian</option>
-            <option value='Chinese'>Chinese</option>
-            <option value='Mexican'>Mexican</option>
-            <option value='Indian'>Indian</option>
-          </select>
-          <ErrorMessage error={errors?.food_type?.message} />
-        </div>
+        <Select
+          label='Food Type *'
+          error={errors?.food_type?.message}
+          {...register('food_type', { required: 'Food type is required' })}
+          options={listOfCuisine}
+        />
 
-        <div className='mb-4'>
-          <label className='mb-2 block font-semibold text-gray-700'>
-            Dining Style *
-          </label>
-          <select
-            {...register('dining_style', {
-              required: 'Dining style is required',
-            })}
-            className='w-full rounded-lg border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-          >
-            <option value=''>Select Dining Style</option>
-            <option value='Casual Dining'>Casual Dining</option>
-            <option value='Fine Dining'>Fine Dining</option>
-            <option value='Fast Food'>Fast Food</option>
-          </select>
-          <ErrorMessage error={errors?.dining_style?.message} />
-        </div>
+        <Select
+          label='Dining Style *'
+          error={errors?.dining_style?.message}
+          {...register('dining_style', {
+            required: 'Dining style is required',
+          })}
+          options={diningStyleOptions}
+        />
       </div>
+
       <button
         type='submit'
         className='mx-auto block rounded-lg bg-blue-500 px-6 py-2 text-white hover:bg-blue-600'

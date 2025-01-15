@@ -1,49 +1,10 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
-import { useStateContext } from '@/infra/hooks/state-context';
-import { setQueryParam } from '@/infra/utils/set-query-param';
 import ErrorMessage from './form/error-message';
+import useHandleSearchInput from '@/infra/hooks/use-handle-search-input';
 
 const SearchInput = () => {
-  const { loading, setInputValue } = useStateContext();
-  const [error, setError] = useState('');
-  const [query, setQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState(query);
-
-  const validateInput = useCallback((value: string) => {
-    if (!value.trim()) {
-      setError('Search query cannot be empty.');
-      return false;
-    }
-    if (value.length < 3) {
-      setError('Search query must be at least 3 characters long.');
-      return false;
-    }
-    setError('');
-    return true;
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-    setQueryParam(e.target.value);
-  };
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 300);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [query]);
-
-  useEffect(() => {
-    if (debouncedQuery && validateInput(debouncedQuery)) {
-      setInputValue(debouncedQuery.trim());
-    }
-  }, [debouncedQuery, setInputValue, validateInput]);
+  const { query, error, loading, handleChange } = useHandleSearchInput();
 
   return (
     <div className='mx-auto w-[50rem] max-w-lg'>
@@ -57,7 +18,7 @@ const SearchInput = () => {
         }}
       >
         <input
-          type='text'
+          type='search'
           value={query}
           onChange={handleChange}
           placeholder='Search for restaurants...'

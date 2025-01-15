@@ -24,6 +24,7 @@ export interface Restaurant {
   rounded_stars_count: number;
   [key: string]: unknown;
 }
+export type RestaurantAttribute = keyof Restaurant;
 
 export interface Geoloc {
   lat: number;

@@ -9,8 +9,7 @@ const useHandleSearchResults = () => {
   const [restaurantToDelete, setRestaurantToDelete] = useState<
     Restaurant | undefined
   >(undefined);
-  const { inputValue, setLoading, setMessage, setListOfCuisine } =
-    useStateContext();
+  const { inputValue, setLoading, setMessage, foodType } = useStateContext();
   const [results, setResults] = useState<Restaurant[]>([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -18,16 +17,16 @@ const useHandleSearchResults = () => {
     async (value: string) => {
       try {
         setLoading(true);
-        const restaurants = await FetchRestaurantsUseCase.execute(value);
+        const restaurants = await FetchRestaurantsUseCase.execute(
+          value,
+          foodType
+        );
         setResults(restaurants);
-        setListOfCuisine([
-          ...new Set(restaurants.map((restaurant) => restaurant.food_type)),
-        ]);
       } finally {
         setLoading(false);
       }
     },
-    [setListOfCuisine, setLoading]
+    [setLoading, foodType]
   );
 
   useEffect(() => {

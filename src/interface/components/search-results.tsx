@@ -44,10 +44,10 @@ const SearchWrapper = () => {
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         message={
-          <>
+          <div>
             Are you sure you want to delete the restaurant{' '}
             <strong>{restaurantToDelete?.name}</strong>?
-          </>
+          </div>
         }
         onConfirm={() => deleteObject(restaurantToDelete?.objectID)}
       />

@@ -5,6 +5,7 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
+import useGetCuisineFilter from './use-get-cuisine-filter';
 
 interface Message {
   type: 'success' | 'error';
@@ -15,9 +16,10 @@ interface StateContextProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
   listOfCuisine: string[];
-  setListOfCuisine: (listOfCuisine: string[]) => void;
   inputValue: string;
   setInputValue: (value: string) => void;
+  foodType: string;
+  setFoodType: (value: string) => void;
   message?: Message;
   setMessage: (message?: Message) => void;
 }
@@ -28,8 +30,8 @@ export const StateProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [message, setMessage] = useState<Message | undefined>(undefined);
-  const [listOfCuisine, setListOfCuisine] = useState<string[]>([]);
-  const [inputValue, setInputValue] = useState('Italian');
+  const { listOfCuisine, foodType, setFoodType } = useGetCuisineFilter();
+  const [inputValue, setInputValue] = useState('Pizza');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -51,7 +53,8 @@ export const StateProvider: React.FC<{ children: ReactNode }> = ({
         message,
         setMessage,
         listOfCuisine,
-        setListOfCuisine,
+        foodType,
+        setFoodType,
       }}
     >
       {children}

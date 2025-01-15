@@ -1,14 +1,19 @@
-import { Restaurant, RestaurantFormValues } from '@/domain/restaurant';
+import { Restaurant, RestaurantAttribute, RestaurantFormValues } from '@/domain/restaurant';
 import searchClient from '../instances/algolia-search.client';
 
 export class RestaurantApi {
-  static async fetchRestaurants(query: string, indexName = 'data'): Promise<Restaurant[]> {
+  static async fetchRestaurants(query: string, food_type?: string, indexName = 'data'): Promise<Restaurant[]> {
     try {
       const response = await searchClient.search<Restaurant[]>({
         requests: [
           {
             indexName,
-            query
+            query,
+            maxValuesPerFacet: 100,
+            ...(food_type ? {
+              filters: `food_type:${food_type.replaceAll(/\s/g, '')
+                }`
+            } : {})
           }
         ]
       })
@@ -17,6 +22,24 @@ export class RestaurantApi {
     } catch (error) {
       console.error('Error fetching restaurants:', error);
       throw new Error('Failed to fetch restaurants');
+    }
+  }
+
+  static async fetchByAttribute(attribute: RestaurantAttribute, indexName = 'data'): Promise<Restaurant[]> {
+    try {
+      const response = await searchClient.search({
+        requests: [
+          {
+            indexName,
+            facets: [attribute.toString()],
+          }
+        ]
+      });
+      // @ts-expect-error: Algolia search response type mismatch
+      return response.results[0].hits;
+    } catch (error) {
+      console.error('Error fetching list types:', error);
+      throw new Error(`Failed to fetch ${attribute} types`);
     }
   }
 
